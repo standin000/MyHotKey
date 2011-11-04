@@ -109,6 +109,8 @@ IniRead, Dict, %IniFile%, Settings, Dict, D:\Tools\GoldenDict\GoldenDict.exe
 
 IniRead, DictClass, %IniFile%, Settings, DictClass, QWidget
 
+IniRead, DictTitle, %IniFile%, Settings, DictTitle, GoldenDict
+
 ; Plato Wu,2009/05/20: it seems LastUsedList is useless
 
 ;IniRead, UsedList, %IniFile%, Settings, UsedList, |
@@ -268,9 +270,6 @@ FileBrowseUpDown =
 ;;;;;;;;;;;;;;;;;;;;;;;; 
 
 ;Plato Wu,2009/05/21: view-lookup-dict-mode
-;GroupAdd, dict, ahk_class YodaoMainWndClass
-;Plato Wu,2009/10/14: use Lingoes
-;GroupAdd, dict, ahk_class Afx:400000:0
 GroupAdd, dict, ahk_class %DictClass%
 
 ;#32770
@@ -1455,8 +1454,9 @@ ExpandVars(Var)
 #IfWinActive
 ; Plato Wu,2009/05/21: view-lookup-dict-mode
 DoHotkey:
-;   MsgBox, DoHotKey
-   WinActivate, ahk_group dict
+; Plato Wu,2011/11/01: try to use title instead class group to resolve same class application issue
+   WinActivate, %DictTitle%
+;ahk_group dict,
    ; Plato Wu,2009/05/22: strim $ prefix
    StringTrimLeft,Hotkey,A_ThisHotkey,1
    Send %Hotkey%      
@@ -1496,17 +1496,12 @@ return
     }
   }
   
-;  MsgBox %lookup_hotkey%
   ifequal, lookup_hotkey, 0
   {
-;Plato Wu,2009/11/09: It seems there is other windows has the same group class with lingoes
-;    IfWinNotExist, Lingoes
-; IfWinNotExist, ahk_group dict
-;Plato Wu,2009/10/14: use Lingoes
-;     Run, D:\Tools\Lingoes\Lingoes.exe
-;      Run, D:\Tools\Launchy\Utilities\Dict.js, D:\Tools\Launchy\Utilities\
-     Run, %Dict%
-;    Hotkey, IfWinActive, ahk_class %view_class%
+    IfWinNotExist, %DictTitle%
+;ahk_group dict
+         Run, %Dict%
+;   Hotkey, IfWinActive, ahk_class %view_class%
     Hotkey, IfWinActive, %view_title%
     Loop % StrLen(alphabet)
     {
@@ -1529,15 +1524,16 @@ return
 ; Plato Wu,2009/5/19 Variable references such as %Var% are not currently
 ; supported in #IfWinActive, use GroupAdd and ahk_group to work around this
 ; limitation
-#IfWinActive ahk_group dict
-; Plato Wu,2009/5/19 The ~ prefix is needed so that when the hotkey fires,
-; its key's native function will not be blocked (hidden from the system). 
-~Enter::
-  ifequal, lookup_mode,1 
-  {
-    sleep 1500
-;    WinActivate ahk_class %view_class%
-    WinActivate %view_title%
-    lookup_mode = 0
-  }
-return
+; Plato Wu,2011/11/01: disable this function
+; #IfWinActive ahk_group dict
+; ; Plato Wu,2009/5/19 The ~ prefix is needed so that when the hotkey fires,
+; ; its key's native function will not be blocked (hidden from the system). 
+; ~Enter::
+;   ifequal, lookup_mode,1 
+;   {
+;     sleep 1500
+; ;    WinActivate ahk_class %view_class%
+;     WinActivate %view_title%
+;     lookup_mode = 0
+;   }
+; return
