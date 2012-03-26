@@ -6,7 +6,7 @@
 GroupAdd file_manager, ahk_class TTOTAL_CMD ; total commander
 GroupAdd file_manager, ahk_class ExploreWClass ; explorer
 GroupAdd file_manager, ahk_class Progman ;desktop
-GroupAdd file_manager, ahk_class WorkerW ;
+GroupAdd file_manager, ahk_class TxUNCOM ; Unreal Commander
 
 ; Do not enable emacs-binding in no_emacs group for they have had emacs-binding
 GroupAdd no_emacs, ahk_class PuTTY
