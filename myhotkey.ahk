@@ -396,18 +396,19 @@ return
 !<:: Send ^{Home}
 !>:: Send ^{End}
 ^x:: C_x_prefix = 1
-1::
-If C_x_prefix = 1
-{
-;   WinRestore, A
-;   WinMaximize, A
-  WinMove, A,,0,0,A_ScreenWidth, A_ScreenHeight
-   C_x_prefix = 0
-}Else
-{  
-   Send 1
-}
-return
+; Plato Wu,2012/12/10: there is 1 in QQ password and it is input initially and this script will cause send 1 again.
+; 1::
+; If C_x_prefix = 1
+; {
+; ;   WinRestore, A
+; ;   WinMaximize, A
+;   WinMove, A,,0,0,A_ScreenWidth, A_ScreenHeight
+;    C_x_prefix = 0
+; }Else
+; {  
+;    Send 1
+; }
+; return
 2::
 If C_x_prefix = 1
 {
