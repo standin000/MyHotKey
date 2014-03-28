@@ -390,31 +390,31 @@ return
 !<:: Send ^{Home}
 !>:: Send ^{End}
 ^x:: C_x_prefix = 1
-1::
-If C_x_prefix = 1
-{
-;   WinRestore, A
-;   WinMaximize, A
-  WinMove, A,,0,0,A_ScreenWidth, A_ScreenHeight
-   C_x_prefix = 0
-}Else
-{  
-   Send 1
-}
-return
-2::
-If C_x_prefix = 1
-{
-;   WinGetPos,,, Width, Height, A
-;   MsgBox, %Width%,%Height%
-   WinMove, A,,0,A_ScreenHeight/2,A_ScreenWidth, A_ScreenHeight/2
-
-   C_x_prefix = 0
-}Else
-{  
-   Send 2
-}
-return
+; Plato Wu,2012/12/10: there is 1 & 2 in QQ password and username and it is input initially and this script will cause send them again.
+; 1::
+; If C_x_prefix = 1
+; {
+; ;   WinRestore, A
+; ;   WinMaximize, A
+;   WinMove, A,,0,0,A_ScreenWidth, A_ScreenHeight
+;    C_x_prefix = 0
+; }Else
+; {  
+;    Send 1
+; }
+; return
+; 2::
+; If C_x_prefix = 1
+; {
+; ;   WinGetPos,,, Width, Height, A
+; ;   MsgBox, %Width%,%Height%
+;    WinMove, A,,0,A_ScreenHeight/2,A_ScreenWidth, A_ScreenHeight/2
+;    C_x_prefix = 0
+; }Else
+; {  
+;    Send 2
+; }
+; return
 ; Plato Wu,2009/05/22: use hotkey function instead double colon label which can not
 ; be disable by hotkey function
 h_hotkey:
