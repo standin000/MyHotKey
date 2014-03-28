@@ -1,6 +1,5 @@
-;;TODO improve singleton process and support window title jump.
+;;@todo improve singleton process and support window title jump.
 
-; lnk file's parameter can not be passed.
 ; replace delete key in file_manager group to use my trash script
 ; Plato Wu,2009/04/21: _ can not be used in group name.
 GroupAdd file_manager, ahk_class TTOTAL_CMD ; total commander
@@ -302,31 +301,26 @@ WinWait ahk_class Notepad ;
 Send ^v
 return
 
-#IfWinActive ahk_group file_manager
-^d::
-Delete::
-Send {AppsKey}M{Enter}
-MouseMove A_CaretX,A_CaretY
-MouseGetPos, , , , control
-;ToolTip,Control %listitems%
-; When Caret is in Edit of file_manager, Send Delete key still
-if InStr(control, "Edit") or InStr(control, "TMyPanel9") or InStr(control, "TMyPanel5") 
-{
-  Send {Click}{Delete}
-}
-;else
-;{
-  ;call movetotrash function  
- ; Send M{Enter}
-;}
-
-return
-#z::
-WinGetTitle, Title, A
-MsgBox, The active window is "%Title%".
-;WinGetClass, class, A
-;MsgBox, The active window's class is "%class%".
-return
+; Plato Wu,2014/03/28: use FreeCommader XE, it support user defined del key
+; #IfWinActive ahk_group file_manager
+; ^d::
+; Delete::
+; Send {AppsKey}M{Enter}
+; MouseMove A_CaretX,A_CaretY
+; MouseGetPos, , , , control
+; ;ToolTip,Control %listitems%
+; ; When Caret is in Edit of file_manager, Send Delete key still
+; if InStr(control, "Edit") or InStr(control, "TMyPanel9") or InStr(control, "TMyPanel5") 
+; {
+;   Send {Click}{Delete}
+; }
+; return
+; #z::
+; WinGetTitle, Title, A
+; MsgBox, The active window is "%Title%".
+; ;WinGetClass, class, A
+; ;MsgBox, The active window's class is "%class%".
+; return
 
 ; Plato Wu,2009/05/31: ^p & ^n need special handle in 320MPH_no_emacs
 #ifWinNotActive ahk_group 320MPH_no_emacs
@@ -1236,21 +1230,23 @@ ButtonOpen:
 
 	Add2History = %RunItem%
 
-	;Plato Wu,2009/5/8, some link file which contain parameter in itself
+	;Plato Wu,2009/5/8, some lnk file which contain parameter in itself
 	;so we can not get its real file path for running.
+    ;;; @todo lnk file's parameter can not be passed.
 	
 	;get real file path from shortcut
 
-;	StringRight, check, RunItem, 4
-;	IfEqual, check, .lnk
-;	{
-;		FileGetShortcut, %RunItem%, LnkTarget
-;    Msgbox %LnkTarget%		
-;		IfNotInString, LnkTarget, {
-;		IfNotInString, LnkTarget, }
-;			RunItem = %LnkTarget%
-;	}
-
+	StringRight, check, RunItem, 4
+	IfEqual, check, .lnk
+	{
+		FileGetShortcut, %RunItem%, LnkTarget, LnkDir, LnkArgs, ,,,LnkRunState
+        RunItem = %LnkTarget%
+        LnkArgs = %LnkArgs% %RParam%
+	}else
+    {
+        LnkArgs = %RParam%		
+        LnkRunState = 1
+    }
 
 	SplitPath, RunItem, FName, FDir, FExt, FNameNoExt, FDrive
 
@@ -1279,10 +1275,7 @@ ButtonOpen:
 ;Plato Wu,2009/5/13, Dismiss its own tooltip
   ;ToolTip
   Gui, Submit, %MainWnd%
-  
-	;simple run
-	IfEqual, RParam,
-        { 
+
                         ; Plato Wu,2010/01/28: Add for Windows case
                 IfNotEqual, FileExist, 1
                 {
@@ -1292,8 +1285,6 @@ ButtonOpen:
                        WinRestore, %RunItem%
 
                    WinActivate, %RunItem%
-                }
-
 ;          StringRight, check, RunItem, 4
                 ;    {
           ;         FileGetShortcut, %RunItem%, Target
@@ -1322,17 +1313,20 @@ ButtonOpen:
           ;    {
           ;        Run, %RunItem%, %FDir%, UseErrorLevel
           ;    }
-          ; }else
-	  {
-	        Run, %RunItem%, %FDir%, UseErrorLevel
-	  }
-        }
-
-
+          ; }
+     }else{
+   	;simple run
 	;runtime param
-
-	IfNotEqual, RParam,
-		Run, %RunItem% "%RParam%", %FDir%, UseErrorLevel
+;;        MsgBox, %RunItem% %LnkArgs% 
+    ; Plato Wu,2014/03/28: when lnk file contain space, it need add "" to RunItem.
+    ; But now I used FileGetShortcut method, it cannot add "". the reason is not clear
+        if LnkRunState = 3
+      		Run, %RunItem% %LnkArgs%, %FDir%, UseErrorLevel|Max
+        else if LnkRunState = 7
+            Run, %RunItem% %LnkArgs%, %FDir%, UseErrorLevel|Min
+        else
+            Run, %RunItem% %LnkArgs%, %FDir%, UseErrorLevel
+     }
 
 	; Plato Wu,2009/05/30: UseErrorLevel will give the number occurrences replaced
         ; to ErrorLevel
