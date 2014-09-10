@@ -110,6 +110,12 @@ IniRead, DictClass, %IniFile%, Settings, DictClass, QWidget
 
 IniRead, DictTitle, %IniFile%, Settings, DictTitle, GoldenDict
 
+IniRead, StartMouseFlag, %IniFile%, Settings, MouseFlag, True
+
+DllCall("SwapMouseButton", Int, StartMouseFlag)
+
+MiddleMouseFlag = StartMouseFlag
+
 ; Plato Wu,2009/05/20: it seems LastUsedList is useless
 
 ;IniRead, UsedList, %IniFile%, Settings, UsedList, |
@@ -127,26 +133,6 @@ PathList := ExpandVars(PathList)
 StringRight, ExtChk, A_ScriptFullPath, 4
 
 IfEqual, ExtChk, .exe
-
-IfEqual, ShellIntegration, 1
-
-{
-
-	RegWrite, REG_SZ, HKCR, *\Shell\320MPH\Command,, "%A_ScriptFullPath%" "`%1"
-
-	RegWrite, REG_SZ, HKCR, Folder\shell\320MPH\command,, "%A_ScriptFullPath%" "`%1"
-
-}
-
-Else
-
-{
-
-	RegDelete, HKCR, *\Shell\320MPH,
-
-	RegDelete, HKCR, Folder\Shell\320MPH,
-
-}
 
 RParam = %1%
 
@@ -288,11 +274,12 @@ IME_ON(hWindow, IsON)
 	; IMC_SETOPENSTATUS = 0x0006 
 	bufCurrentDetectMode := A_DetectHiddenWindows
 	DetectHiddenWindows, On 
-	buf := DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint",hWindow), "UInt", 0x0283, "Int", 0x0006, "Int", IsON) 
+    ; Plato Wu,2014/05/14: use latest method call for win7 64bit
+;	buf := DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint",hWindow), "UInt", 0x0283, "Int", 0x0006, "Int", IsON) 
+    buf := DllCall("SendMessage", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint",hWindow), "UInt", 0x0283, "Int", 0x0006, "Int", IsON) 
 	DetectHiddenWindows, %bufCurrentDetectMode%
 	Return buf
 }
-
 
 #c::
 Send ^c
@@ -458,8 +445,14 @@ If C_x_prefix = 1
      Send !d!n
 }
 return
+;DllCall("SwapMouseButton", Int, False)
+; Plato Wu,2014/04/18: use middle mouse button to swap mouse button
+MButton::DllCall("SwapMouseButton", Int,( MiddleMouseFlag:=!MiddleMouseFlag ) )
 ;Suspend or Resume hotkeys 
-^q::Suspend
+^q::
+Suspend
+DllCall("SwapMouseButton", Int,( StartMouseFlag:=!StartMouseFlag ) )
+return
 ;Reload script
 ^!r::Reload
 ;;;;;;;;;;;;;;;;;;;;;;;; Merge from 320MPH
@@ -1230,21 +1223,18 @@ ButtonOpen:
 
 	Add2History = %RunItem%
 
-	;Plato Wu,2009/5/8, some lnk file which contain parameter in itself
-	;so we can not get its real file path for running.
-    ;;; @todo lnk file's parameter can not be passed.
-	
 	;get real file path from shortcut
 
 	StringRight, check, RunItem, 4
-	IfEqual, check, .lnk
-	{
-		FileGetShortcut, %RunItem%, LnkTarget, LnkDir, LnkArgs, ,,,LnkRunState
-        RunItem = %LnkTarget%
-        LnkArgs = %LnkArgs% %RParam%
-	}else
+    ; Plato Wu,2014/04/02: the parameter @home of home.lnk is weird, so don't use FileGetShortcut
+	; IfEqual, check, .lnk
+	; {
+	; 	FileGetShortcut, %RunItem%, LnkTarget, LnkDir, LnkArgs, ,,,LnkRunState
+    ;     RunItem = %LnkTarget%
+    ;     LnkArgs = %LnkArgs% %RParam%
+	; }else
     {
-        LnkArgs = %RParam%		
+        LnkArgs = %RParam%
         LnkRunState = 1
     }
 
@@ -1319,13 +1309,13 @@ ButtonOpen:
 	;runtime param
 ;;        MsgBox, %RunItem% %LnkArgs% 
     ; Plato Wu,2014/03/28: when lnk file contain space, it need add "" to RunItem.
-    ; But now I used FileGetShortcut method, it cannot add "". the reason is not clear
+    ; but with LnkArgs, "" is NG, don't know why
         if LnkRunState = 3
       		Run, %RunItem% %LnkArgs%, %FDir%, UseErrorLevel|Max
         else if LnkRunState = 7
             Run, %RunItem% %LnkArgs%, %FDir%, UseErrorLevel|Min
         else
-            Run, %RunItem% %LnkArgs%, %FDir%, UseErrorLevel
+            Run, "%RunItem% %LnkArgs%", %FDir%, UseErrorLevel
      }
 
 	; Plato Wu,2009/05/30: UseErrorLevel will give the number occurrences replaced
