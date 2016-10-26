@@ -25,6 +25,7 @@ GroupAdd no_emacs, ahk_class VNCviewer ;TightVNC
 GroupAdd no_emacs, ahk_class cygwin/xfree86 ; NX Client
 GroupAdd no_emacs, ahk_class Emacs ;Emacs W32
 GroupAdd no_emacs, NX ; NX Client
+GroupAdd no_emacs, ahk_class VirtualConsoleClass ; cmder
 
 ;GroupAdd no_emacs, ahk_class cygwin/x ; Xming
 
@@ -447,7 +448,10 @@ If C_x_prefix = 1
 return
 ;DllCall("SwapMouseButton", Int, False)
 ; Plato Wu,2014/04/18: use middle mouse button to swap mouse button
-MButton::DllCall("SwapMouseButton", Int,( MiddleMouseFlag:=!MiddleMouseFlag ) )
+#LButton::
+DllCall("SwapMouseButton", Int,( MiddleMouseFlag:=!MiddleMouseFlag))
+Msgbox "Swap Mouse Button"
+return
 ;Suspend or Resume hotkeys 
 ^q::
 Suspend
