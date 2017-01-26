@@ -1509,6 +1509,34 @@ return
   }
 return
 
+#IfWinActive ahk_class #32770
+
+; Set COMDLG32 File Open Save Dialog to Dopus folder
+^l::
+   ; ClipSaved := Clipboard ;save the previous clipboard so we can restore it later
+   ; Clipboard= ;empty the clipboard so ClipWait has something to wait for
+   ; ClipWait
+   ; folder := Clipboard
+   ; Clipboard := ClipSaved ;restore the previous clipboard   
+   folder := "D:\Temp"
+   MsgBox, %folder%
+   If(SubStr(folder,0,1)="""") {
+      StringTrimLeft, folder, folder, 1
+   }
+   If(SubStr(folder,StrLen(folder),1)="""") {
+      StringTrimRight, folder, folder, 1
+   }
+   ControlGetText, previousfilename, Edit1
+   ControlSetText, Edit1, %folder%
+   ControlFocus, Edit1
+;   ControlSend , Edit1, {Enter}
+   Sleep, 300 ; wait 300 ms for the the new folder to load
+   ControlSetText, Edit1, %previousfilename%
+   ControlSend , Edit1, {End}
+Return
+
+#IfWinActive
+
 ; Plato Wu,2009/5/19 Variable references such as %Var% are not currently
 ; supported in #IfWinActive, use GroupAdd and ahk_group to work around this
 ; limitation
