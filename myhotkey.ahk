@@ -26,6 +26,7 @@ GroupAdd no_emacs, ahk_class cygwin/xfree86 ; NX Client
 GroupAdd no_emacs, ahk_class Emacs ;Emacs W32
 GroupAdd no_emacs, NX ; NX Client
 GroupAdd no_emacs, ahk_class VirtualConsoleClass ; cmder
+GroupAdd no_emacs, ahk_class TMobaXtermForm ; MobaXterm
 
 ;GroupAdd no_emacs, ahk_class cygwin/x ; Xming
 
