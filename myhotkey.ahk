@@ -1,34 +1,25 @@
 ;;@todo improve singleton process and support window title jump.
 
-; replace delete key in file_manager group to use my trash script
-; Plato Wu,2009/04/21: _ can not be used in group name.
-GroupAdd file_manager, ahk_class TTOTAL_CMD ; total commander
-GroupAdd file_manager, ahk_class ExploreWClass ; explorer
-GroupAdd file_manager, ahk_class Progman ;desktop
-GroupAdd file_manager, ahk_class TxUNCOM ; Unreal Commander
-
 ; Do not enable emacs-binding in no_emacs group for they have had emacs-binding
-GroupAdd no_emacs, ahk_class PuTTY
-GroupAdd no_emacs, ahk_class KiTTY
-GroupAdd no_emacs, ahk_class TSSHELLWND ; Remote Desktop
-GroupAdd no_emacs, ahk_class Emacs ; Emacs W32
-; Plato Wu, 2009/4/28, try to not use firemace.
-; GroupAdd no_emacs, ahk_class MozillaUIWindowClass ; Mozilla Firefox
-GroupAdd no_emacs, ahk_class {E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8} ; foobar
-; rxvt use different windows class in diffrent machine like 
-GroupAdd no_emacs, MINGW32
-GroupAdd no_emacs, DrScheme
-GroupAdd no_emacs, ARM - Multi-ICE Server ; I need C-r shortkey of it.
-GroupAdd no_emacs, ahk_class VNCMDI_Window ; UltraVNC
-GroupAdd no_emacs, ahk_class mintty 
-GroupAdd no_emacs, ahk_class VNCviewer ;TightVNC
-GroupAdd no_emacs, ahk_class cygwin/xfree86 ; NX Client
-GroupAdd no_emacs, ahk_class Emacs ;Emacs W32
-GroupAdd no_emacs, NX ; NX Client
-GroupAdd no_emacs, ahk_class VirtualConsoleClass ; cmder
-GroupAdd no_emacs, ahk_class TMobaXtermForm ; MobaXterm
-
-;GroupAdd no_emacs, ahk_class cygwin/x ; Xming
+; GroupAdd no_emacs, ahk_class PuTTY
+; GroupAdd no_emacs, ahk_class KiTTY
+; GroupAdd no_emacs, ahk_class TSSHELLWND ; Remote Desktop
+; GroupAdd no_emacs, ahk_class Emacs ; Emacs W32
+; ; Plato Wu, 2009/4/28, try to not use firemace.
+; ; GroupAdd no_emacs, ahk_class MozillaUIWindowClass ; Mozilla Firefox
+; GroupAdd no_emacs, ahk_class {E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8} ; foobar
+; ; rxvt use different windows class in diffrent machine like 
+; GroupAdd no_emacs, MINGW32
+; GroupAdd no_emacs, DrScheme
+; GroupAdd no_emacs, ARM - Multi-ICE Server ; I need C-r shortkey of it.
+; GroupAdd no_emacs, ahk_class VNCMDI_Window ; UltraVNC
+; GroupAdd no_emacs, ahk_class mintty 
+; GroupAdd no_emacs, ahk_class VNCviewer ;TightVNC
+; GroupAdd no_emacs, ahk_class cygwin/xfree86 ; NX Client
+; GroupAdd no_emacs, NX ; NX Client
+; GroupAdd no_emacs, ahk_class VirtualConsoleClass ; cmder
+; GroupAdd no_emacs, ahk_class TMobaXtermForm ; MobaXterm
+; ;GroupAdd no_emacs, ahk_class cygwin/x ; Xming
 
 DetectHiddenWindows, On
 AllowMulteInstance=Totalcmd.exe|cygwin.exe
@@ -57,10 +48,6 @@ AutoTrim, Off
 SetBatchLines, -1
 
 MainWnd = Launchy & XKeymacs -- Rajat, Plato Wu
-
-GroupAdd, 320MPH, ahk_class AutoHotkeyGUI
-GroupAdd, 320MPH_no_emacs, ahk_group 320MPH
-GroupAdd, 320MPH_no_emacs, ahk_group no_emacs
 
 SetKeyDelay, 0
 
@@ -123,6 +110,20 @@ MiddleMouseFlag = StartMouseFlag
 ;IniRead, UsedList, %IniFile%, Settings, UsedList, |
 
 ;LastUsedList = %UsedList%
+
+; Plato Wu,2020/08/12: use IniFile for no_emacs
+IniRead, NoEmacsList, %IniFile%, Settings, NoEmacsList
+
+; Loop, Parse, NoEmacsList, |, %A_Space%%A_Tab% don't need Trim
+Loop, Parse, NoEmacsList, |
+{
+;    MsgBox, %A_LoopField%
+    GroupAdd, no_emacs, % Trim(A_LoopField)
+}
+
+GroupAdd, 320MPH, ahk_class AutoHotkeyGUI
+GroupAdd, 320MPH_no_emacs, ahk_group 320MPH
+GroupAdd, 320MPH_no_emacs, ahk_group no_emacs
 
 GuiW := A_ScreenWidth - GuiWMinus
 
@@ -290,7 +291,14 @@ WinWait ahk_class Notepad ;
 Send ^v
 return
 
+; replace delete key in file_manager group to use my trash script
 ; Plato Wu,2014/03/28: use FreeCommader XE, it support user defined del key
+; Plato Wu,2009/04/21: _ can not be used in group name.
+GroupAdd file_manager, ahk_class TTOTAL_CMD ; total commander
+GroupAdd file_manager, ahk_class ExploreWClass ; explorer
+GroupAdd file_manager, ahk_class Progman ;desktop
+GroupAdd file_manager, ahk_class TxUNCOM ; Unreal Commander
+
 ; #IfWinActive ahk_group file_manager
 ; ^d::
 ; Delete::
