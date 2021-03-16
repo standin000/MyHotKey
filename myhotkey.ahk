@@ -1,5 +1,7 @@
 ;;@todo improve singleton process and support window title jump.
 
+#SingleInstance force
+
 ; Do not enable emacs-binding in no_emacs group for they have had emacs-binding
 ; GroupAdd no_emacs, ahk_class PuTTY
 ; GroupAdd no_emacs, ahk_class KiTTY
@@ -370,8 +372,7 @@ If clipboard_index > 0
 {
   ; discard previous paste result
   Send ^z
-  clipboard_index --
-  clipboard_index --
+  clipboard_index -=2
   ; Plato Wu,2009/04/21: Since %Array%clipboard_index%% is illegal
   element := Array%clipboard_index%
   clipboard = %element%
@@ -471,25 +472,26 @@ return
 ;;;;;;;;;;;;;;;;;;;;;;;; Merge from 320MPH
 #IfWinActive
 ;Plato Wu, 2009/5/7, Use Alt+Space to invoke GUI and hide GUI, just like launchy
-!Space::
-IfWinNotActive, %MainWnd%,
-{
+; Plato Wu,2020/12/09: use Listary instead
+; !Space::
+; IfWinNotActive, %MainWnd%,
+; {
 
-  Gui, Show, h%GuiH% w%GuiW%, %MainWnd%
-  ; Plato Wu,2009/05/20: make edit initial as insertion mode
-  ControlFocus, Edit1, %MainWnd%
-  ; Plato Wu,2010/03/01: it does not work with AHKL,use shift down/up instead.
-  ; Plato Wu,2010/03/05: now I don't use AHKL
-  ControlSend Edit1, +^a, %MainWnd%
-;  ControlSend Edit1, {Shift Down}{HOME}{Shift Up}, %MainWnd%
-  ; Plato Wu,2009/06/30: Disable Chinese input method which can muss shift key state.
-  ; Sleep, 1000
-  ; ControlSend Edit1, ^+0, %MainWnd%
-   ControlGet, hWindow, Hwnd 
-   ; Plato Wu,2009/12/08: Disable IME
-   IME_ON(%hWindow%, 0)
-  return
-}
+;   Gui, Show, h%GuiH% w%GuiW%, %MainWnd%
+;   ; Plato Wu,2009/05/20: make edit initial as insertion mode
+;   ControlFocus, Edit1, %MainWnd%
+;   ; Plato Wu,2010/03/01: it does not work with AHKL,use shift down/up instead.
+;   ; Plato Wu,2010/03/05: now I don't use AHKL
+;   ControlSend Edit1, +^a, %MainWnd%
+; ;  ControlSend Edit1, {Shift Down}{HOME}{Shift Up}, %MainWnd%
+;   ; Plato Wu,2009/06/30: Disable Chinese input method which can muss shift key state.
+;   ; Sleep, 1000
+;   ; ControlSend Edit1, ^+0, %MainWnd%
+;    ControlGet, hWindow, Hwnd 
+;    ; Plato Wu,2009/12/08: Disable IME
+;    IME_ON(%hWindow%, 0)
+;   return
+; }
 ;ToolTip
 Gui, Submit, %MainWnd%
 return
