@@ -443,7 +443,8 @@ If C_x_prefix = 1
       Send u
 }
 return
-^r:: Send ^f!u!n 
+; Plato Wu,2021/05/20: little using in emacs edit mode, but useful for search in powershell
+; ^r:: Send ^f!u!n 
 ^s::
 If C_x_prefix = 1
 {
