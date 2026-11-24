@@ -105,7 +105,8 @@ IniRead, StartMouseFlag, %IniFile%, Settings, MouseFlag, True
 
 DllCall("SwapMouseButton", Int, StartMouseFlag)
 
-MiddleMouseFlag = StartMouseFlag
+; Track current swap state for ^!m toggle (must copy the value, not the name)
+MiddleMouseFlag := StartMouseFlag
 
 ; Plato Wu,2009/05/20: it seems LastUsedList is useless
 
@@ -457,16 +458,19 @@ If C_x_prefix = 1
      Send !d!n
 }
 return
-;DllCall("SwapMouseButton", Int, False)
-; Plato Wu,2014/04/18: use middle mouse button to swap mouse button
-#LButton::
+; Toggle left/right mouse buttons only — does not Suspend hotkeys
+; Plato Wu,2014/04/18: previously Win+LButton; now Ctrl+Alt+M
+^!m::
 DllCall("SwapMouseButton", Int,( MiddleMouseFlag:=!MiddleMouseFlag))
-Msgbox "Swap Mouse Button"
+ToolTip, % MiddleMouseFlag ? "Mouse: swapped (left-handed)" : "Mouse: normal (right-handed)"
+SetTimer, ClearMouseSwapTip, -1000
 return
-;Suspend or Resume hotkeys 
+ClearMouseSwapTip:
+ToolTip
+return
+;Suspend or Resume hotkeys (mouse buttons unchanged)
 ^q::
 Suspend
-DllCall("SwapMouseButton", Int,( StartMouseFlag:=!StartMouseFlag ) )
 return
 ;Reload script
 ^!r::Reload
